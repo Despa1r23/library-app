@@ -1,6 +1,7 @@
 import psycopg2
 from psycopg2 import sql
 from datetime import datetime
+import os  # Добавляем импорт для работы с переменными окружения
 
 class Database:
     def __init__(self):
@@ -10,15 +11,23 @@ class Database:
     def connect(self):
         """Подключение к базе данных"""
         try:
+            # Берем пароль из переменной окружения DB_PASSWORD
+            # Если переменная не установлена, используем пустую строку
+            db_password = os.getenv("DB_PASSWORD", "")
+            
             self.connection = psycopg2.connect(
                 host="localhost",
                 database="library_db",
                 user="library_user",
-                password="807002"  # ЗАМЕНИ НА СВОЙ ПАРОЛЬ!
+                password=db_password  # Используем переменную окружения
             )
             print("Успешное подключение к базе данных")
         except Exception as e:
             print(f"Ошибка подключения к базе данных: {e}")
+            print("Проверьте:")
+            print("1. Запущен ли PostgreSQL? (sudo systemctl status postgresql)")
+            print("2. Установлена ли переменная окружения DB_PASSWORD?")
+            print("3. Существует ли база данных library_db и пользователь library_user?")
     
     def get_all_books(self):
         """Получить все книги"""
